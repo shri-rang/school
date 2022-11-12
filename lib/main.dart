@@ -1,6 +1,4 @@
-
-
- import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -35,11 +33,16 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          // primarySwatch: Colors.blue,
-          primaryColor: bg,
-          // backgroundColor: bg,
-          appBarTheme: AppBarTheme(backgroundColor: bg),
-          textTheme: TextTheme()),
+        // primarySwatch: Colors.blue,
+        primaryColor: bg,
+        // backgroundColor: bg,
+        appBarTheme: AppBarTheme(backgroundColor: bg),
+
+        textTheme: Theme.of(context).textTheme.apply(
+              bodyColor: bg, //<-- SEE HERE
+              displayColor: Colors.pinkAccent, //<-- SEE HERE
+            ),
+      ),
       home: startScreen,
     );
   }

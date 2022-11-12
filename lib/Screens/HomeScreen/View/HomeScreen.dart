@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:schoolman/Colors.dart';
+import 'package:schoolman/Screens/Attendance/View/AttendaneScreen.dart';
+import 'package:schoolman/Screens/CircularScreen/View/CircularScreen.dart';
 import 'package:schoolman/Screens/LoginScreen/View/LoginScreen.dart';
+import 'package:schoolman/Screens/LoginScreen/loginController/LoginController.dart';
+import 'package:schoolman/Screens/Profile/profilePage.dart';
 import 'package:schoolman/utility.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -11,6 +16,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final loginController = Get.put(LoginController());
+
   List<String> image = [
     "https://development.erpsofts.com/public/asset/icon/student-details.png",
     "https://development.erpsofts.com/public/asset/icon/attendance.jpg",
@@ -38,6 +45,21 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
+        title: Obx(
+          () => loginController.schoolModel.value.logo == null
+              ? Container()
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.network(
+                      loginController.schoolModel.value.logo!,
+                      height: 30,
+                      width: 30,
+                    ),
+                    Text(loginController.schoolModel.value.data!.name!),
+                  ],
+                ),
+        ),
         actions: [
           // IconButton(
           //     onPressed: () async {
@@ -55,7 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          AppBar(),
+          AppBar(
+            backgroundColor: accentbg,
+          ),
           SizedBox(
             height: 10,
           ),
@@ -72,34 +96,47 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisSpacing: 10),
                 itemCount: tile.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(19)),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
-                      borderOnForeground: true,
-                      semanticContainer: true,
-                      elevation: 5,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 19,
-                          ),
-                          Image.network(
-                            image[index],
-                            height: 60,
-                            width: 50,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            tile[index],
-                            style: TextStyle(fontSize: 13),
-                          ),
-                        ],
+                  return GestureDetector(
+                    onTap: () {
+                      if (index == 0) {
+                        Get.to(ProfilePage());
+                      }
+                      if (index == 3) {
+                        Get.to(CircularScreen());
+                      }
+                      if (index == 1) {
+                        Get.to(AttendanceScreen());
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(19)),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15.0),
+                        ),
+                        borderOnForeground: true,
+                        semanticContainer: true,
+                        elevation: 5,
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 19,
+                            ),
+                            Image.network(
+                              image[index],
+                              height: 60,
+                              width: 50,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              tile[index],
+                              style: TextStyle(fontSize: 13),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

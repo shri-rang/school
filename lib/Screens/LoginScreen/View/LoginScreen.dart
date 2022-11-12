@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:schoolman/Colors.dart';
 import 'package:schoolman/Screens/LoginScreen/loginController/LoginController.dart';
 import 'package:schoolman/widgets/Widgets.dart';
 
@@ -34,17 +35,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Gap(30),
                     Obx(
-                      () => Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.network(
-                            loginController.schoolModel.value.logo!,
-                            height: 30,
-                            width: 30,
-                          ),
-                          Text(loginController.schoolModel.value.data!.name!),
-                        ],
-                      ),
+                      () => loginController.schoolModel.value.logo != null
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.network(
+                                  loginController.schoolModel.value.logo!,
+                                  height: 30,
+                                  width: 30,
+                                ),
+                                Text(loginController
+                                    .schoolModel.value.data!.name!),
+                              ],
+                            )
+                          : Container(),
                     ),
                     SizedBox(
                       height: 30,
@@ -65,14 +69,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     }, "Password"),
                     Gap(19),
-                    ElevatedButton(
-                        onPressed: () async {
-                          if (loginFormKey.currentState!.validate()) {
-                            loginController.loginUser(
-                                nameController.text, passController.text);
-                          }
-                        },
-                        child: Text("Submit")),
+                    Container(
+                      width: double.infinity,
+                      height: 45,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(primary: bg),
+                          onPressed: () async {
+                            if (loginFormKey.currentState!.validate()) {
+                              dai();
+                              await loginController.loginUser(
+                                  nameController.text, passController.text);
+                            }
+                          },
+                          child: Text("Submit")),
+                    ),
                     Gap(19),
                     TextButton(
                         onPressed: () {}, child: Text("Forgot Password?")),
@@ -85,5 +95,16 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  dai() {
+    Get.dialog(Center(
+      child: Container(
+        child: CircularProgressIndicator(
+          color: bg,
+          backgroundColor: accentbg,
+        ),
+      ),
+    ));
   }
 }

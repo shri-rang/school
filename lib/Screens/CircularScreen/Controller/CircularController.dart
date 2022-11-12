@@ -1,24 +1,33 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:get/get.dart';
-import 'package:schoolman/Model/LoginModel.dart';
-import 'package:schoolman/Model/SchoolModel.dart';
-import 'package:schoolman/Screens/HomeScreen/View/HomeScreen.dart';
-import 'package:schoolman/Services/LoginService/LoginService.dart';
+import 'package:schoolman/Model/CircularDetailModel.dart';
+import 'package:schoolman/Model/CircularModel.dart';
+import 'package:schoolman/Services/Circular/CircularServices.dart';
 import 'package:schoolman/contant/constant.dart';
 import 'package:schoolman/utility.dart';
+import 'package:http/http.dart' as http;
 
-class LoginController extends GetxController {
-  Rx<SchoolModel> schoolModel = SchoolModel().obs;
-  final loginService = LoginService();
-
+class CircularController extends GetxController {
+  String? token;
+  RxList<Datum> data = <Datum>[].obs;
+  Rx<CircularDetailModel> circularDetailModel = CircularDetailModel().obs;
   @override
   void onInit() async {
+    // TODO: implement onInit
     super.onInit();
-    schoolInfo();
+
+    token = await getToken();
+    // var id = await getStdId();
+    // profile(id!);
+    await circular();
   }
 
-  Future<void> loginUser(String emailId, String password) async {
+  final circularService = CircularServices();
+
+  Rx<CircularModel> circularModel = CircularModel().obs;
+
+  Future<void> circular() async {
     // if (!isValid) {
     //   print('not valid form');
     //   Get.back();
@@ -26,9 +35,8 @@ class LoginController extends GetxController {
     // } else {
     // loginFormKey.currentState!.save();
 
-    final response = await loginService.loginUser(
-      emailId,
-      password,
+    final response = await circularService.circular(
+      token!,
     );
     if (response == " ") {
       Get.back();
@@ -51,20 +59,25 @@ class LoginController extends GetxController {
           Get.back(closeOverlays: true);
           customSnackBar(Constants.pleaseTryAgain, mapdata['message']);
         } else {
-          final loginModel = loginModelFromJson(response.body);
+          print(response.body);
 
-          saveToken(loginModel.data!.token!);
-          saveStdId(loginModel.studentId!);
+          circularModel.value = circularModelFromJson(response.body);
+
+          data.addAll(circularModel.value.data!);
+          // schoolModel.value = schoolModelFromJson(response.body);
+          // profileModel.value = profileModelFromJson(response.body);
+          // saveToken(loginModel.data!.token!);
+
           // Get.back();
           // saveToken(mapdata['data']['remember_token']);
-          Get.offAll(HomeScreen());
+          // Get.offAll(HomeScreen());
         }
         print(mapdata);
       }
     }
   }
 
-  Future<void> schoolInfo() async {
+  Future<void> circularDetail(String id) async {
     // if (!isValid) {
     //   print('not valid form');
     //   Get.back();
@@ -72,7 +85,7 @@ class LoginController extends GetxController {
     // } else {
     // loginFormKey.currentState!.save();
 
-    final response = await loginService.schoolInfo();
+    final response = await circularService.circularDetail(token!, id);
     if (response == " ") {
       Get.back();
       customSnackBar(
@@ -94,8 +107,14 @@ class LoginController extends GetxController {
           Get.back(closeOverlays: true);
           customSnackBar(Constants.pleaseTryAgain, mapdata['message']);
         } else {
-          schoolModel.value = schoolModelFromJson(response.body);
+          print(response.body);
 
+          // final circularModel = circularModelFromJson(response.body);
+          circularDetailModel.value =
+              circularDetailModelFromJson(response.body);
+          // data.addAll(circularModel.data!);
+          // schoolModel.value = schoolModelFromJson(response.body);
+          // profileModel.value = profileModelFromJson(response.body);
           // saveToken(loginModel.data!.token!);
 
           // Get.back();

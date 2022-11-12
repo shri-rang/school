@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:schoolman/Colors.dart';
+import 'package:schoolman/Screens/Profile/Controller.dart/ProfileController.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,6 +18,9 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   ImagePicker picker = ImagePicker();
   File? profile;
+
+  final profileController = Get.put(ProfileController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,76 +30,119 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            Center(
-              child: Text(
-                "Profile Picture",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Stack(
-              children: [
-                Center(
+        child: Obx(
+          () => profileController.profileModel.value.photo == null
+              ? 
+              Center(
                   child: Container(
-                      height: 100,
-                      width: 100,
-                      child: profile == null
-                          ?
-                          //    FileImage(File(profile.path))
-                          //
-                          CircleAvatar(
-                              backgroundImage: AssetImage('assets/profile.jpg'),
-                            )
-                          : CircleAvatar(
-                              backgroundImage: FileImage(profile!),
-                              //
-                            )),
+                    child: CircularProgressIndicator(
+                      color: bg,
+                    ),
+                  ),
+                )
+              : SingleChildScrollView(
+                  child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                        child: Text(
+                          "Profile Picture",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Stack(
+                        children: [
+                          Center(
+                            child: Container(
+                                height: 100,
+                                width: 100,
+                                child: profile == null
+                                    ?
+                                    //    FileImage(File(profile.path))
+                                    //
+                                    CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            profileController
+                                                .profileModel.value.photo!),
+                                      )
+                                    : CircleAvatar(
+                                        backgroundImage: FileImage(profile!),
+                                        //
+                                      )),
+                          ),
+                          Positioned(
+                              left: 210,
+                              bottom: 1,
+                              //  left: MediaQuery.of(context).size.width/2.4,
+                              //  top: 200,
+                              //  top:MediaQuery.of(context).size.height/7 ,
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                    borderRadius: BorderRadius.circular(30)),
+                                child: IconButton(
+                                    // style: ElevatedButton.styleFrom(
+                                    //   backgroundColor: Colors.blue
+                                    // ),
+
+                                    iconSize: 20,
+                                    onPressed: () {
+                                      _showMyDialog();
+
+                                      // picker.pickImage(source: ImageSource.camera );
+                                    },
+                                    icon: Icon(Icons.edit)),
+                              ))
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      profileWidget("Name",
+                          profileController.profileModel.value.data!.name!),
+                      profileWidget(
+                          "Father Name",
+                          profileController
+                              .profileModel.value.data!.fatherName!),
+                      profileWidget(
+                          "Mother Name",
+                          profileController
+                              .profileModel.value.data!.motherName!),
+                      profileWidget(
+                          "Date of Birth",
+                          profileController.profileModel.value.data!.dob!
+                              .toString()
+                              .split(" ")
+                              .first),
+                      profileWidget("Gender",
+                          profileController.profileModel.value.data!.gender!),
+                      profileWidget(
+                          "Nationality",
+                          profileController
+                              .profileModel.value.data!.nationality!),
+                      profileWidget("Adhaar No",
+                          profileController.profileModel.value.data!.aadharNo!),
+                      profileWidget("Email",
+                          profileController.profileModel.value.data!.email!),
+                      profileWidget("Phone No",
+                          profileController.profileModel.value.data!.phoneNo!),
+                      profileWidget(
+                          "Father Profession",
+                          profileController
+                              .profileModel.value.data!.fatherProfession!),
+                    ],
+                  ),
                 ),
-                Positioned(
-                    left: 210,
-                    bottom: 1,
-                    //  left: MediaQuery.of(context).size.width/2.4,
-                    //  top: 200,
-                    //  top:MediaQuery.of(context).size.height/7 ,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(30)),
-                      child: IconButton(
-                          // style: ElevatedButton.styleFrom(
-                          //   backgroundColor: Colors.blue
-                          // ),
-
-                          iconSize: 20,
-                          onPressed: () {
-                            _showMyDialog();
-
-                            // picker.pickImage(source: ImageSource.camera );
-                          },
-                          icon: Icon(Icons.edit)),
-                    ))
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            profileWidget(),
-            profileWidget(),
-            profileWidget(),
-            profileWidget(),
-            profileWidget(),
-          ],
         ),
       ),
     );
@@ -149,15 +198,15 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  profileWidget() {
+  profileWidget(String title, String subtitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        headName(),
+        headName(title),
         SizedBox(
           height: 7,
         ),
-        subHeader(),
+        subHeader(subtitle),
         Divider(
           thickness: 1.5,
         )
@@ -165,17 +214,17 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  headName() {
+  headName(String title) {
     return Text(
-      "Father Name",
+      title,
       style: TextStyle(
           color: Colors.grey, fontSize: 15, fontWeight: FontWeight.bold),
     );
   }
 
-  subHeader() {
+  subHeader(String subtitle) {
     return Text(
-      "Amit",
+      subtitle,
       style: TextStyle(color: Colors.black, fontSize: 18),
     );
   }
